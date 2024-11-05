@@ -1,43 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello World</title>
+		<title>Яндекс.Диск Пирсинг</title>
+		<style>
+			.folder {
+				cursor: pointer;
+				color: blue;
+			}
+			.nested {
+				display: none;
+				margin-left: 20px;
+			}
+		</style>
 	</head>
 	<body>
-		<!DOCTYPE html>
-		<html lang="ru">
-			<head>
-				<meta charset="UTF-8" />
-				<title>Яндекс.Диск Пирсинг</title>
-			</head>
-			<body>
-				<h1>Просмотр и скачивание файлов с Яндекс.Диска</h1>
-				<form method="POST" action="{{ url_for('index') }}">
-					<label>Введите публичный ключ:</label>
-					<input type="text" name="public_key" required />
-					<button type="submit">Показать файлы</button>
-				</form>
-				{% if files %}
-				<h2>Файлы:</h2>
-				<ul>
-					{% for file in files %}
-					<li>
-						{{ file['name'] }}
-						<form
-							action="{{ url_for('download') }}"
-							method="POST"
-							style="display: inline"
-						>
-							<input type="hidden" name="file_url" value="{{ file['file'] }}" />
-							<button type="submit">Скачать</button>
-						</form>
-					</li>
-					{% endfor %}
+		<h1>Просмотр и скачивание файлов с Яндекс.Диска</h1>
+		<form method="POST" action="{{ url_for('index') }}">
+			<label>Введите публичный ключ:</label>
+			<input type="text" name="public_key" required />
+			<button type="submit">Показать файлы</button>
+		</form>
+		{% if files %}
+		<h2>Файлы:</h2>
+		<ul>
+			{% for item in files %} {% if item.type == "folder" %}
+			<li>
+				<span class="folder" onclick="toggleFolder('{{ item.path }}')"
+					>{{ item.name }}</span
+				>
+				<ul class="nested" id="{{ item.path }}">
+					<!-- Файлы и папки внутри этой папки будут отображены здесь при необходимости -->
 				</ul>
-				{% endif %}
-			</body>
-		</html>
+			</li>
+			{% elif item.type == "file" %}
+			<li>
+				{{ item.name }}
+				<form
+					action="{{ url_for('download') }}"
+					method="POST"
+					style="display: inline"
+				>
+					<input type="hidden" name="file_url" value="{{ item.file }}" />
+					<button type="submit">Скачать</button>
+				</form>
+			</li>
+			{% endif %} {% endfor %}
+		</ul>
+		{% endif %}
+
+		<script>
+			function toggleFolder(path) {
+				const folder = document.getElementById(path)
+				folder.style.display =
+					folder.style.display === 'none' ? 'block' : 'none'
+				// Вложенный код для динамической загрузки содержимого папки (например, через AJAX) может быть добавлен здесь
+			}
+		</script>
 	</body>
 </html>
