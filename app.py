@@ -6,13 +6,22 @@ YANDEX_API_URL = "https://cloud-api.yandex.net/v1/disk/public/resources"
 
 # Получение списка файлов
 def get_files(public_key):
-    params = {"public_key": public_key}
-    response = requests.get(YANDEX_API_URL, params=params)
-    if response.status_code == 200:
-        items = response.json().get("_embedded", {}).get("items", [])
-        return [{"name": item["name"], "file": item["file"]} for item in items if item["type"] == "file"]
-    else:
-        return None
+    params = {"public_key": public_key, "limit": 100}  # Устанавливаем лимит на 100 файлов за запрос
+    files = []
+    while True:
+        response = requests.get(YANDEX_API_URL, params=params)
+        if response.status_code == 200:
+            items = response.json().get("_embedded", {}).get("items", [])
+            files.extend([{"name": item["name"], "file": item["file"]} for item in items if item["type"] == "file"])
+            # Проверяем, есть ли еще файлы для загрузки
+            if len(items) < params["limit"]:
+                break
+            # Увеличиваем offset для следующей порции файлов
+            params["offset"] = params.get("offset", 0) + params["limit"]
+        else:
+            break
+    return files if files else None
+
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
