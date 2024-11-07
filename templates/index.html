@@ -12,10 +12,45 @@
 				display: none;
 				margin-left: 20px;
 			}
+
+			* {
+				background-color: #383838;
+				color: #fff;
+			}
+			body {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-items: center;
+			}
+			button {
+				margin-left: 10px;
+				border-radius: 3px;
+				border: 1px;
+				border-color: black;
+			}
+			button:hover {
+				background-color: #fff;
+				color: #383838;
+				transform: scale(1.1);
+				transition: 1s;
+			}
+			img {
+				padding: 20px;
+			}
+			.folder {
+				cursor: pointer;
+				color: blue;
+			}
+			.nested {
+				display: none;
+				margin-left: 20px;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>Просмотр и скачивание файлов с Яндекс.Диска</h1>
+		<img src="static/1.png" width="80" height="80" />
 		<form method="POST" action="{{ url_for('index') }}">
 			<label>Введите публичный ключ:</label>
 			<input type="text" name="public_key" required />
@@ -48,14 +83,5 @@
 			{% endif %} {% endfor %}
 		</ul>
 		{% endif %}
-
-		<script>
-			function toggleFolder(path) {
-				const folder = document.getElementById(path)
-				folder.style.display =
-					folder.style.display === 'none' ? 'block' : 'none'
-				// Вложенный код для динамической загрузки содержимого папки (например, через AJAX) может быть добавлен здесь
-			}
-		</script>
 	</body>
 </html>
